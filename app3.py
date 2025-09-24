@@ -71,19 +71,41 @@ PIB_final = CT + CK + I + G + (X - M)
 st.subheader(f"PIB Final: **{PIB_final:.2f}**")
 
 # =====================
-# Guardar PIB por año
+# Guardar PIB por año con validaciones
 # =====================
 st.subheader("💾 Guardar PIB por año")
-año = st.number_input("Año", min_value=1900, max_value=2100, value=2025, step=1)
-if st.button("Guardar PIB"):
-    st.session_state["pib_data"][año] = PIB_final
-    st.success(f"PIB del año {año} guardado: {PIB_final:.2f} B")
+anio = st.number_input("Año", min_value=1900, max_value=2100, value=2025, step=1)
 
-# Mostrar historial de PIBs guardados
+if st.button("Guardar PIB"):
+    if anio in st.session_state["pib_data"]:
+        if st.checkbox(f"⚠️ El año {anio} ya tiene un valor ({st.session_state['pib_data'][anio]:.2f}). ¿Quieres sobrescribirlo?"):
+            st.session_state["pib_data"][anio] = PIB_final
+            st.success(f"✅ PIB actualizado para {anio}: {PIB_final:.2f} B")
+        else:
+            st.warning("Selecciona la casilla si quieres sobrescribir el valor existente.")
+    else:
+        st.session_state["pib_data"][anio] = PIB_final
+        st.success(f"✅ PIB del año {anio} guardado: {PIB_final:.2f} B")
+
+# =====================
+# Mostrar / Editar / Eliminar datos guardados
+# =====================
 if st.session_state["pib_data"]:
-    st.subheader("Historial de PIB guardado")
-    for year, pib in st.session_state["pib_data"].items():
-        st.write(f"📌 {year}: {pib:.2f} B")
+    st.subheader("📑 Historial de PIB guardado")
+    for year, pib in sorted(st.session_state["pib_data"].items()):
+        col1, col2, col3 = st.columns([2, 2, 1])
+        with col1:
+            nuevo_valor = st.number_input(f"PIB {year}", value=pib, key=f"edit_{year}")
+        with col2:
+            if st.button(f"Actualizar {year}"):
+                st.session_state["pib_data"][year] = nuevo_valor
+                st.success(f"PIB de {year} actualizado a {nuevo_valor}")
+        with col3:
+            if st.button(f"🗑️ Borrar {year}"):
+                del st.session_state["pib_data"][year]
+                st.warning(f"PIB de {year} eliminado")
+                st.experimental_rerun()
+
 
 # =====================
 # Gráficas
