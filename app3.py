@@ -91,6 +91,21 @@ if anio in st.session_state["pib_data"]:
         st.success(f"🔄 PIB del {anio} sobrescrito con valor: {PIB_final:.2f} B")
 
 
+  # =====================
+    # Gráfica del PIB en el tiempo
+    # =====================
+    st.subheader("📈 Evolución del PIB en el tiempo")
+    fig, ax = plt.subplots(figsize=(8, 4))
+    years = sorted(st.session_state["pib_data"].keys())
+    values = [st.session_state["pib_data"][y] for y in years]
+    ax.plot(years, values, marker="o", color="blue", linestyle="-")
+    ax.set_xlabel("Año")
+    ax.set_ylabel("PIB (B)")
+    ax.set_title("Evolución del PIB")
+    ax.grid(True)
+    st.pyplot(fig)
+
+
 
 # =====================
 # Gráficas
