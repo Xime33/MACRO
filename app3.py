@@ -74,18 +74,18 @@ st.subheader(f"PIB Final: **{PIB_final:.2f}**")
 # Guardar PIB por año con validaciones
 # =====================
 st.subheader("💾 Guardar PIB por año")
-anio = st.number_input("Año", min_value=1900, max_value=2100, value=2025, step=1)
+año = st.number_input("Año", min_value=1900, max_value=2100, value=2025, step=1)
 
 if st.button("Guardar PIB"):
-    if anio in st.session_state["pib_data"]:
-        if st.checkbox(f"⚠️ El año {anio} ya tiene un valor ({st.session_state['pib_data'][anio]:.2f}). ¿Quieres sobrescribirlo?"):
-            st.session_state["pib_data"][anio] = PIB_final
-            st.success(f"✅ PIB actualizado para {anio}: {PIB_final:.2f} B")
+    if año in st.session_state["pib_data"]:
+        if st.checkbox(f"⚠️ El año {año} ya tiene un valor ({st.session_state['pib_data'][año]:.2f}). ¿Quieres sobrescribirlo?"):
+            st.session_state["pib_data"][año] = PIB_final
+            st.success(f"✅ PIB actualizado para {año}: {PIB_final:.2f} B")
         else:
             st.warning("Selecciona la casilla si quieres sobrescribir el valor existente.")
     else:
-        st.session_state["pib_data"][anio] = PIB_final
-        st.success(f"✅ PIB del año {anio} guardado: {PIB_final:.2f} B")
+        st.session_state["pib_data"][año] = PIB_final
+        st.success(f"✅ PIB del año {año} guardado: {PIB_final:.2f} B")
 
 # =====================
 # Mostrar / Editar / Eliminar datos guardados
