@@ -97,32 +97,47 @@ ax.grid(True)
 st.pyplot(fig)
 
 # =====================
-# Gráficas de funciones
+# Gráficas de funciones con historial SOLO si cambian parámetros
 # =====================
 st.subheader("📈 Gráficas de las funciones")
 
-fig, axes = plt.subplots(3, 2, figsize=(10, 8))
-fig.tight_layout(pad=3.0)
-
-axes = axes.flatten()
-
+# Diccionario con funciones y parámetros
 funcs = {
-    "C_t": (calcular_Ct, a, ct, Yt, "blue"),
-    "C_k": (calcular_Ck, b, ck, Yk, "green"),
-    "I": (calcular_I, h, i_val, pi, "orange"),
-    "G": (calcular_G, d, g_val, Rf, "red"),
-    "X": (calcular_X, e, x_val, Yeu, "purple"),
-    "M": (calcular_M, f, m_val, Ymex, "brown")
+    "C_t": (calcular_Ct, a, ct, Yt, "Yt"),
+    "C_k": (calcular_Ck, b, ck, Yk, "Yk"),
+    "I": (calcular_I, h, i_val, pi, "π"),
+    "G": (calcular_G, d, g_val, Rf, "Rf"),
+    "X": (calcular_X, e, x_val, Yeu, "Yeu"),
+    "M": (calcular_M, f, m_val, Ymex, "Ymex")
 }
 
-for ax, (name, (func, p1, p2, y_var, color)) in zip(axes, funcs.items()):
-    x_vals = [0, 1, 2, 3, 4, 5]
-    y_vals = [func(p1, p2, Y) for Y in x_vals]
-    ax.plot(x_vals, y_vals, color=color, label=name)
-    ax.set_title(name)
-    ax.set_xlabel("Variable independiente")
+# Inicializar almacenamiento si no existe
+if "funciones_historial" not in st.session_state:
+    st.session_state["funciones_historial"] = {name: [] for name in funcs}
+if "ultimos_parametros" not in st.session_state:
+    st.session_state["ultimos_parametros"] = {name: None for name in funcs}
+
+# Generar gráficas independientes
+for name, (func, p1, p2, y_var, xlabel) in funcs.items():
+    st.markdown(f"### {name}")
+
+    # Definir parámetros actuales como tupla (para detectar cambios)
+    parametros_actuales = (p1, p2, y_var)
+
+    # Solo agregar nueva curva si los parámetros cambiaron
+    if st.session_state["ultimos_parametros"][name] != parametros_actuales:
+        x_vals = [0, 1, 2, 3, 4, 5]
+        y_vals = [func(p1, p2, Y) for Y in x_vals]
+        st.session_state["funciones_historial"][name].append((x_vals, y_vals))
+        st.session_state["ultimos_parametros"][name] = parametros_actuales
+
+    # Graficar todas las curvas guardadas
+    fig, ax = plt.subplots(figsize=(5, 3))
+    for idx, (x_h, y_h) in enumerate(st.session_state["funciones_historial"][name]):
+        ax.plot(x_h, y_h, marker="o", label=f"{name} v{idx+1}")
+    ax.set_title(f"Función {name}")
+    ax.set_xlabel(xlabel)
     ax.set_ylabel(name)
     ax.grid(True)
     ax.legend()
-
-st.pyplot(fig)
+    st.pyplot(fig)
