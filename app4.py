@@ -1,9 +1,9 @@
 import streamlit as st
 import matplotlib.pyplot as plt
 
-# =====================
+
 # Valores por defecto
-# =====================
+
 default_values = {
     "C_t_a": 4, "C_t_ct": 0.8, "Yt": 5,
     "C_k_b": 1, "C_k_ck": 0.2, "Yk": 5,
@@ -13,9 +13,9 @@ default_values = {
     "M_f": 1, "M_m": 0.2, "Ymex": 5
 }
 
-# =====================
+
 # Funciones
-# =====================
+
 def calcular_Ct(a, ct, Yt): return a + ct*Yt
 def calcular_Ck(b, ck, Yk): return b + ck*Yk
 def calcular_I(h, i_val, pi): return h + i_val*pi
@@ -23,9 +23,9 @@ def calcular_G(d, g, Rf): return d + g*Rf
 def calcular_X(e, x_val, Yeu): return e + x_val*Yeu
 def calcular_M(f, m, Ymex): return f + m*Ymex
 
-# =====================
+
 # Interfaz Streamlit
-# =====================
+
 st.title("📊 Macroeconomía - PIB y funciones")
 
 st.sidebar.header("Parámetros")
@@ -64,9 +64,9 @@ PIB_final = CT + CK + I + G + (X - M)
 
 st.subheader(f"PIB Final (calculado): **{PIB_final:.2f}**")
 
-# =====================
+
 # Gráfica del PIB fija
-# =====================
+
 pib_fijo = {
     2011: 20,
     2012: 21,
@@ -96,9 +96,8 @@ ax.set_title("Evolución histórica del PIB")
 ax.grid(True)
 st.pyplot(fig)
 
-# =====================
 # Gráficas de funciones con historial SOLO si cambian parámetros
-# =====================
+
 st.subheader("📈 Gráficas de las funciones")
 
 # Diccionario con funciones y parámetros
@@ -141,3 +140,5 @@ for name, (func, p1, p2, y_var, xlabel) in funcs.items():
     ax.grid(True)
     ax.legend()
     st.pyplot(fig)
+
+
