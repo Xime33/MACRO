@@ -1,6 +1,6 @@
 import streamlit as st
 import matplotlib.pyplot as plt
-
+import numpy as np
 
 # Valores por defecto
 
@@ -109,11 +109,32 @@ funcs = {
     "M": (calcular_M, f, m_val, Ymex, "Ymex")
 }
 
+with st.expander("ℹ️ Sobre el modelo"):
+    st.markdown("""
+    Este modelo calcula el PIB usando la ecuación:
+    
+    **PIB = C + I + G + (X - M)**
+    
+    Donde:
+    - C = Consumo (C_t + C_k)
+    - I = Inversión
+    - G = Gasto público
+    - X = Exportaciones
+    - M = Importaciones
+    """)
+
 # Inicializar almacenamiento si no existe
 if "funciones_historial" not in st.session_state:
     st.session_state["funciones_historial"] = {name: [] for name in funcs}
 if "ultimos_parametros" not in st.session_state:
     st.session_state["ultimos_parametros"] = {name: None for name in funcs}
+
+# Add a reset button
+if st.button("🔄 Reset History"):
+    st.session_state["funciones_historial"] = {name: [] for name in funcs}
+    st.session_state["ultimos_parametros"] = {name: None for name in funcs}
+    st.rerun()
+
 
 # Generar gráficas independientes
 for name, (func, p1, p2, y_var, xlabel) in funcs.items():
@@ -128,11 +149,11 @@ for name, (func, p1, p2, y_var, xlabel) in funcs.items():
         y_vals = [func(p1, p2, Y) for Y in x_vals]
         st.session_state["funciones_historial"][name].append((x_vals, y_vals))
         st.session_state["ultimos_parametros"][name] = parametros_actuales
-
+    colors = plt.cm.viridis(np.linspace(0, 1, len(st.session_state["funciones_historial"][name])))
     # Graficar todas las curvas guardadas
     fig, ax = plt.subplots(figsize=(5, 3))
     for idx, (x_h, y_h) in enumerate(st.session_state["funciones_historial"][name]):
-        ax.plot(x_h, y_h, marker="o", label=f"{name} v{idx+1}")
+        ax.plot(x_h, y_h, marker="o", label=f"{name} v{idx+1}",color=colors[idx], linewidth=2, alpha=0.7)
     ax.set_title(f"Función {name}")
     ax.set_xlabel(xlabel)
     ax.set_ylabel(name)
