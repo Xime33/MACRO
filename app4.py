@@ -6,18 +6,17 @@ import matplotlib.pyplot as plt
 
 default_values = {
     "C_t_a": 4, "C_t_ct": 0.8, "Yt": 5,
-    "C_k_b": 1, "C_k_ck": 0.2, "Yk": 5,
+    "C_k_b": 1, "C_k_ck": 0.2,"pik": 5,
     "I_h": 3, "I_i": 0.4, "pi": 5,
     "G_d": 2, "G_g": 0.4, "Rf": 5,
     "X_e": 2, "X_x": 0.2, "Yeu": 5,
     "M_f": 1, "M_m": 0.2, "Ymex": 5
 }
 
-
 # Funciones
 
 def calcular_Ct(a, ct, Yt): return a + ct*Yt
-def calcular_Ck(b, ck, Yk): return b + ck*Yk
+def calcular_Ck(b, ck, pik): return b + ck*pik
 def calcular_I(h, i_val, pi): return h + i_val*pi
 def calcular_G(d, g, Rf): return d + g*Rf
 def calcular_X(e, x_val, Yeu): return e + x_val*Yeu
@@ -43,9 +42,9 @@ f = st.sidebar.number_input("M - f", value=default_values["M_f"])
 m_val = st.sidebar.number_input("M - m", value=default_values["M_m"])
 
 # Variables independientes (constantes)
-Yt, Yk, pi, Rf, Yeu, Ymex = (
+Yt, pik, pi, Rf, Yeu, Ymex = (
     default_values["Yt"],
-    default_values["Yk"],
+    default_values["pik"],
     default_values["pi"],
     default_values["Rf"],
     default_values["Yeu"],
@@ -54,7 +53,7 @@ Yt, Yk, pi, Rf, Yeu, Ymex = (
 
 # Calcular valores
 CT = calcular_Ct(a, ct, Yt)
-CK = calcular_Ck(b, ck, Yk)
+CK = calcular_Ck(b, ck, pik)
 I = calcular_I(h, i_val, pi)
 G = calcular_G(d, g_val, Rf)
 X = calcular_X(e, x_val, Yeu)
@@ -103,7 +102,7 @@ st.subheader("📈 Gráficas de las funciones")
 # Diccionario con funciones y parámetros
 funcs = {
     "C_t": (calcular_Ct, a, ct, Yt, "Yt"),
-    "C_k": (calcular_Ck, b, ck, Yk, "Yk"),
+    "C_k": (calcular_Ck, b, ck, pik, "pik"),
     "I": (calcular_I, h, i_val, pi, "π"),
     "G": (calcular_G, d, g_val, Rf, "Rf"),
     "X": (calcular_X, e, x_val, Yeu, "Yeu"),
