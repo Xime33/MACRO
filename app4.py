@@ -64,6 +64,19 @@ PIB_final = CT + CK + I + G + (X - M)
 st.subheader(f"PIB Final (calculado): **{PIB_final:.2f}**")
 
 
+# breakdown
+col1, col2, col3 = st.columns(3)
+with col1:
+    st.metric("Consumo (C_t)", f"{CT:.2f}")
+    st.metric("Consumo (C_k)", f"{CK:.2f}")
+with col2:
+    st.metric("Inversión (I)", f"{I:.2f}")
+    st.metric("Gasto Público (G)", f"{G:.2f}")
+with col3:
+    st.metric("Exportaciones (X)", f"{X:.2f}")
+    st.metric("Importaciones (M)", f"{M:.2f}")
+
+st.metric("**Exportaciones Netas (X-M)**", f"{X-M:.2f}")
 # Gráfica del PIB fija
 
 pib_fijo = {
