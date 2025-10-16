@@ -28,6 +28,7 @@ def calcular_M(f, m, Ymex): return f + m*Ymex
 st.title("📊 Macroeconomía - PIB y funciones")
 
 st.sidebar.header("Parámetros")
+
 a = st.sidebar.number_input("C_t - a", value=default_values["C_t_a"])
 ct = st.sidebar.number_input("C_t - ct", value=default_values["C_t_ct"])
 b = st.sidebar.number_input("C_k - b", value=default_values["C_k_b"])
