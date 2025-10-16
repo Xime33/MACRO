@@ -2,9 +2,7 @@ import streamlit as st
 import matplotlib.pyplot as plt
 import numpy as np
 
-# -----------------------------
-# Default values
-# -----------------------------
+
 default_values = {
     "C_t_a": 4, "C_t_ct": 0.8, "Yt": 5,
     "C_k_b": 1, "C_k_ck": 0.2,"pik": 5,
@@ -17,9 +15,7 @@ default_values = {
 lista = [0, 1, 2, 3, 2, 1, 2, 4, 5, 4, 3, 2, 3, 4, 5]  # Economic cycle
 years = list(range(2011, 2026))
 
-# -----------------------------
-# Functions
-# -----------------------------
+
 def calcular_Ct(a, ct, Yt): return a + ct * Yt
 def calcular_Ck(b, ck, pik): return b + ck * pik
 def calcular_I(h, i_val, pi): return h + i_val * pi
@@ -34,12 +30,9 @@ def ciclo_G(d, g): return [d + g*i for i in lista]
 def ciclo_X(e, x_val): return [e + x_val*i for i in lista]
 def ciclo_M(f, m): return [f + m*i for i in lista]
 
-# -----------------------------
-# Streamlit Layout
-# -----------------------------
 st.title("Macroeconomía - PIB y Funciones")
 
-# Sidebar with grouped inputs
+
 with st.sidebar.expander("Consumo (C)"):
     a = st.number_input("C_t - a", value=default_values["C_t_a"])
     ct = st.number_input("C_t - ct", value=default_values["C_t_ct"])
@@ -79,9 +72,7 @@ Rf_range = get_range("Rf")
 Yeu_range = get_range("Yeu")
 Ymex_range = get_range("Ymex")
 
-# -----------------------------
-# Calculations
-# -----------------------------
+
 CT = calcular_Ct(a, ct, Yt_range[-1])
 CK = calcular_Ck(b, ck, pik_range[-1])
 I = calcular_I(h, i_val, pi_range[-1])
@@ -90,9 +81,7 @@ X = calcular_X(e, x_val, Yeu_range[-1])
 M = calcular_M(f, m_val, Ymex_range[-1])
 PIB_final = CT + CK + I + G + (X - M)
 
-# -----------------------------
-# Display Metrics
-# -----------------------------
+
 st.subheader("PIB Final y Componentes")
 col1, col2, col3 = st.columns(3)
 col1.metric("Consumo C_t", f"{CT:.2f}")
@@ -102,11 +91,9 @@ col2.metric("Gasto Público G", f"{G:.2f}")
 col3.metric("Exportaciones X", f"{X:.2f}")
 col3.metric("Importaciones M", f"{M:.2f}")
 st.metric("Exportaciones Netas (X-M)", f"{X-M:.2f}")
-st.metric("PIB Final", f"{PIB_final:.2f}")
+st.subheader(f"PIB Final (calculado): **{PIB_final:.2f}**")
 
-# -----------------------------
-# Functions Setup
-# -----------------------------
+
 funcs = {
     "C_t": (calcular_Ct, a, ct, Yt_range, "Yt", ciclo_Ct),
     "C_k": (calcular_Ck, b, ck, pik_range, "pik", ciclo_Ck),
@@ -123,9 +110,7 @@ if "ultimos_parametros" not in st.session_state:
 if "stored_year_values" not in st.session_state:
     st.session_state["stored_year_values"] = {2024: {}, 2025: {}}
 
-# -----------------------------
-# Control Buttons
-# -----------------------------
+
 col_reset, col_year, col_store = st.columns([1,1,1])
 with col_reset:
     if st.button("Reset History"):
@@ -138,7 +123,6 @@ with col_year:
 with col_store:
     store_clicked = st.button("Guardar Valor del Año")
 
-# Ranges for dynamic plotting
 independent_ranges = {
     "C_t": (Yt_range, default_values["Yt"]),
     "C_k": (pik_range, default_values["pik"]),
@@ -157,9 +141,7 @@ default_cycle_params = {
     "M": (default_values["M_f"], default_values["M_m"])
 }
 
-# -----------------------------
-# Plot Functions
-# -----------------------------
+
 for name, (func, p1, p2, x_vals, xlabel, ciclo_func) in funcs.items():
     st.markdown(f"### {name}")
     parametros_actuales = (p1, p2, tuple(x_vals))
