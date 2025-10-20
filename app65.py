@@ -16,6 +16,9 @@ lista = [0, 1, 2, 3, 2, 1, 2, 4, 5, 4, 3, 2, 3, 4, 5]  # Economic cycle
 years = list(range(2011, 2026))
 
 
+
+
+
 def calcular_Ct(a, ct, Yt): return a + ct * Yt
 def calcular_Ck(b, ck, pik): return b + ck * pik
 def calcular_I(h, i_val, pi): return h + i_val * pi
@@ -109,6 +112,8 @@ if "ultimos_parametros" not in st.session_state:
     st.session_state["ultimos_parametros"] = {name: None for name in funcs}
 if "stored_year_values" not in st.session_state:
     st.session_state["stored_year_values"] = {2024: {}, 2025: {}}
+
+
 
 
 col_reset, col_year, col_store = st.columns([1,1,1])
