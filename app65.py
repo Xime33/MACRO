@@ -1,11 +1,14 @@
 import streamlit as st
 import matplotlib.pyplot as plt
 import numpy as np
+import re
+
+from style50 import StyleCheck, Style50
 
 
 default_values = {
     "C_t_a": 4, "C_t_ct": 0.8, "Yt": 5,
-    "C_k_b": 1, "C_k_ck": 0.2,"pik": 5,
+    "C_k_b": 1, "C_k_ck": 0.2, "pik": 5,
     "I_h": 3, "I_i": 0.4, "pi": 5,
     "G_d": 2, "G_g": 0.4, "Rf": 5,
     "X_e": 2, "X_x": 0.2, "Yeu": 5,
@@ -17,8 +20,6 @@ years = list(range(2011, 2026))
 
 
 
-
-
 def calcular_Ct(a, ct, Yt): return a + ct * Yt
 def calcular_Ck(b, ck, pik): return b + ck * pik
 def calcular_I(h, i_val, pi): return h + i_val * pi
@@ -26,12 +27,14 @@ def calcular_G(d, g, Rf): return d + g * Rf
 def calcular_X(e, x_val, Yeu): return e + x_val * Yeu
 def calcular_M(f, m, Ymex): return f + m * Ymex
 
+
 def ciclo_Ct(a, ct): return [a + ct*i for i in lista]
 def ciclo_Ck(b, ck): return [b + ck*i for i in lista]
 def ciclo_I(h, i_val): return [h + i_val*i for i in lista]
 def ciclo_G(d, g): return [d + g*i for i in lista]
 def ciclo_X(e, x_val): return [e + x_val*i for i in lista]
 def ciclo_M(f, m): return [f + m*i for i in lista]
+
 
 st.title("Macroeconomía - PIB y Funciones")
 
@@ -62,11 +65,14 @@ with st.sidebar.expander("Comercio Exterior"):
 
 # Sidebar ranges
 st.sidebar.subheader("Rango de variables independientes")
+
+
 def get_range(name, default_start=0, default_end=5, default_step=1):
     start = st.sidebar.number_input(f"{name} start", value=default_start)
     end = st.sidebar.number_input(f"{name} end", value=default_end)
     step = st.sidebar.number_input(f"{name} step", value=default_step)
     return np.arange(start, end+step, step)
+
 
 Yt_range = get_range("Yt")
 pik_range = get_range("pik")
@@ -114,9 +120,7 @@ if "stored_year_values" not in st.session_state:
     st.session_state["stored_year_values"] = {2024: {}, 2025: {}}
 
 
-
-
-col_reset, col_year, col_store = st.columns([1,1,1])
+col_reset, col_year, col_store = st.columns([1, 1, 1])
 with col_reset:
     if st.button("Reset History"):
         st.session_state["funciones_historial"] = {name: [] for name in funcs}
@@ -160,8 +164,9 @@ for name, (func, p1, p2, x_vals, xlabel, ciclo_func) in funcs.items():
     
     # Historical ranges plot
     with col_plot1:
-        fig, ax = plt.subplots(figsize=(5,3))
-        colors = plt.cm.viridis(np.linspace(0, 1, len(st.session_state["funciones_historial"][name])))
+        fig, ax = plt.subplots(figsize=(5, 3))
+        colors = plt.cm.viridis(np.linspace(
+            0, 1, len(st.session_state["funciones_historial"][name])))
         for idx, (x_h, y_h) in enumerate(st.session_state["funciones_historial"][name]):
             ax.plot(x_h, y_h, marker="o", color=colors[idx], linewidth=2, alpha=0.7)
         ax.set_xlabel(xlabel)
@@ -181,20 +186,24 @@ for name, (func, p1, p2, x_vals, xlabel, ciclo_func) in funcs.items():
         val_2024_current = func(p1, p2, current_val)
         val_2025_current = func(p1, p2, current_val)
         
-        val_2024_plot = st.session_state["stored_year_values"][2024].get(name, full_cycle[years.index(2024)])
-        val_2025_plot = st.session_state["stored_year_values"][2025].get(name, full_cycle[years.index(2025)])
+        val_2024_plot = st.session_state["stored_year_values"][2024].get(
+            name, full_cycle[years.index(2024)])
+        val_2025_plot = st.session_state["stored_year_values"][2025].get(
+            name, full_cycle[years.index(2025)])
         
         if store_clicked:
-            st.session_state["stored_year_values"][year_selected][name] = val_2024_current if year_selected==2024 else val_2025_current
+            st.session_state["stored_year_values"][year_selected][name] = val_2024_current if year_selected == 2024 else val_2025_current
             val_2024_plot = st.session_state["stored_year_values"][2024].get(name, val_2024_plot)
             val_2025_plot = st.session_state["stored_year_values"][2025].get(name, val_2025_plot)
 
         full_cycle[years.index(2024)] = val_2024_plot
         full_cycle[years.index(2025)] = val_2025_plot
 
-        fig2, ax2 = plt.subplots(figsize=(5,3))
-        ax2.plot(years, full_cycle, marker="o", color="orange", linewidth=2, alpha=0.7, label="Ciclo económico")
-        ax2.scatter([2024, 2025], [val_2024_plot, val_2025_plot], color="red", s=80, label=[f'2024: {val_2024_plot:.2f}', f'2025: {val_2025_plot:.2f}'])
+        fig2, ax2 = plt.subplots(figsize=(5, 3))
+        ax2.plot(years, full_cycle, marker="o", color="orange",
+                  linewidth=2, alpha=0.7, label="Ciclo económico")
+        ax2.scatter([2024, 2025], [val_2024_plot, val_2025_plot], color="red", s=80,
+                     label=[f'2024: {val_2024_plot:.2f}', f'2025: {val_2025_plot:.2f}'])
         ax2.set_xlabel("Año")
         ax2.set_ylabel(name)
         ax2.grid(True)
