@@ -194,7 +194,7 @@ for name, (func, p1, p2, x_vals, xlabel, ciclo_func) in funcs.items():
 
         fig2, ax2 = plt.subplots(figsize=(5,3))
         ax2.plot(years, full_cycle, marker="o", color="orange", linewidth=2, alpha=0.7, label="Ciclo económico")
-        ax2.scatter([2024, 2025], [val_2024_plot, val_2025_plot], color="red", s=80, label="Valores dinámicos")
+        ax2.scatter([2024, 2025], [val_2024_plot, val_2025_plot], color="red", s=80, label=[f'Valor 2024: {val_2024_plot:.2f}', f'Valor 2025: {val_2025_plot:.2f}'])
         ax2.set_xlabel("Año")
         ax2.set_ylabel(name)
         ax2.grid(True)
