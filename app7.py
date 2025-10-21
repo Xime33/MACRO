@@ -2,9 +2,7 @@ import streamlit as st
 import matplotlib.pyplot as plt
 import numpy as np
 
-# -------------------
-# Valores por defecto
-# -------------------
+
 default_values = {
     "C_t_a": 4, "C_t_ct": 0.8, "Yt": 5,
     "C_k_b": 1, "C_k_ck": 0.2,"pik": 5,
@@ -17,9 +15,7 @@ default_values = {
 lista = [0, 1, 2, 3, 2, 1, 2, 4, 5, 4, 3, 2, 3, 4, 5]
 years = list(range(2011, 2026))
 
-# -------------------
-# Funciones económicas
-# -------------------
+
 def calcular_Ct(a, ct, Yt): return a + ct * Yt
 def calcular_Ck(b, ck, pik): return b + ck * pik
 def calcular_I(h, i_val, pi): return h + i_val * pi
@@ -34,14 +30,9 @@ def ciclo_G(d, g): return [d + g*i for i in lista]
 def ciclo_X(e, x_val): return [e + x_val*i for i in lista]
 def ciclo_M(f, m): return [f + m*i for i in lista]
 
-# -------------------
-# Título
-# -------------------
 st.title("Macroeconomía - PIB y Funciones")
 
-# -------------------
-# Sidebar: Parámetros
-# -------------------
+
 with st.sidebar.expander("Consumo (C)"):
     a = st.number_input("C_t - a", value=default_values["C_t_a"], key="C_t_a")
     ct = st.number_input("C_t - ct", value=default_values["C_t_ct"], key="C_t_ct")
@@ -66,9 +57,7 @@ with st.sidebar.expander("Comercio Exterior"):
     Yeu = st.number_input("Yeu", value=default_values["Yeu"], key="Yeu")
     Ymex = st.number_input("Ymex", value=default_values["Ymex"], key="Ymex")
 
-# -------------------
-# Rango de variables independientes
-# -------------------
+
 st.sidebar.subheader("Rango de variables independientes")
 def get_range(name, default_start=0, default_end=5, default_step=1):
     start = st.sidebar.number_input(f"{name} start", value=default_start, key=f"{name}_start")
@@ -83,9 +72,7 @@ Rf_range = get_range("Rf")
 Yeu_range = get_range("Yeu")
 Ymex_range = get_range("Ymex")
 
-# -------------------
-# Funciones y rangos
-# -------------------
+
 funcs = {
     "C_t": (calcular_Ct, a, ct, Yt_range, "Yt", ciclo_Ct),
     "C_k": (calcular_Ck, b, ck, pik_range, "pik", ciclo_Ck),
@@ -104,9 +91,7 @@ default_cycle_params = {
     "M": (default_values["M_f"], default_values["M_m"])
 }
 
-# -------------------
-# Session state
-# -------------------
+
 if "funciones_historial" not in st.session_state:
     st.session_state["funciones_historial"] = {name: [] for name in funcs}
 if "ultimos_parametros" not in st.session_state:
@@ -116,9 +101,7 @@ if "stored_year_values" not in st.session_state:
 if "pib_dinamico" not in st.session_state:
     st.session_state["pib_dinamico"] = {2024: None, 2025: None}
 
-# -------------------
-# PIB final
-# -------------------
+
 CT = calcular_Ct(a, ct, Yt_range[-1])
 CK = calcular_Ck(b, ck, pik_range[-1])
 I_val = calcular_I(h, i_val, pi_range[-1])
@@ -129,9 +112,7 @@ PIB_final = CT + CK + I_val + G_val + (X_val - M_val)
 
 st.subheader(f"PIB Final (calculado): **{PIB_final:.2f}**")
 
-# -------------------
-# Selector de año y botón para PIB dinámico
-# -------------------
+
 col_year, col_store = st.columns([1,1])
 with col_year:
     year_selected = st.selectbox("Año a modificar", [2024, 2025], key="selectbox_pib")
@@ -140,9 +121,7 @@ with col_store:
     if store_clicked:
         st.session_state["pib_dinamico"][year_selected] = PIB_final
 
-# -------------------
-# PIB histórico fijo + dinámico
-# -------------------
+
 pib_fijo = {
     2011: 20, 2012: 21, 2013: 21.5, 2014: 22, 2015: 21,
     2016: 20.5, 2017: 20, 2018: 19, 2019: 19.5, 2020: 18,
