@@ -1,9 +1,9 @@
 import streamlit as st
 import matplotlib.pyplot as plt
 import numpy as np
-import re
 
-from style50 import StyleCheck, Style50
+
+
 
 
 default_values = {
@@ -214,9 +214,7 @@ for name, (func, p1, p2, x_vals, xlabel, ciclo_func) in funcs.items():
 
 
 
-# ==========================
-# 📊 PIB Dinámico y Evolución
-# ==========================
+
 
 # Calcula nuevamente el PIB con los valores actuales
 CT = calcular_Ct(a, ct, Yt_range[-1])

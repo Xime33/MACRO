@@ -5,11 +5,13 @@ import pandas as pd
 
 
 
-# Load PIB data
+
 pib_df = pd.read_csv("pib_mexico.csv")  # or use st.file_uploader if uploading in app
 pib_df["TIME_PERIOD"] = pib_df["TIME_PERIOD"].astype(int)
 pib_df["OBS_VALUE"] = pib_df["OBS_VALUE"].astype(float)
 pib_fijo = dict(zip(pib_df["TIME_PERIOD"], pib_df["OBS_VALUE"]))
+
+pib_fijo_millones = {year: value / 1e6 for year, value in pib_fijo.items()}
 
 
 
@@ -222,9 +224,7 @@ for name, (func, p1, p2, x_vals, xlabel, ciclo_func) in funcs.items():
 
 
 
-# ==========================
-# 📊 PIB Dinámico y Evolución
-# ==========================
+
 
 # Calcula nuevamente el PIB con los valores actuales
 CT = calcular_Ct(a, ct, Yt_range[-1])
@@ -238,7 +238,7 @@ PIB_final = CT + CK + I_val + G_val + (X_val - M_val)
 st.markdown("---")
 st.subheader(f"PIB Final (calculado): **{PIB_final:.2f}**")
 
-# Inicializa el diccionario de PIB dinámico en session_state si no existe
+# Inicializa PIB dinámico en session_state si no existe
 if "pib_dinamico" not in st.session_state:
     st.session_state["pib_dinamico"] = {2024: None, 2025: None}
 
@@ -251,10 +251,15 @@ with col_store:
         st.session_state["pib_dinamico"][year_selected_pib] = PIB_final
 
 # PIB histórico base
-years_plot = sorted(pib_fijo.keys())
-values_plot = [
-    st.session_state["pib_dinamico"].get(y, pib_fijo[y]) for y in years_plot
-]
+years_plot = sorted(pib_fijo_millones.keys())
+values_plot = []
+for y in years_plot:
+    pib_dyn = st.session_state["pib_dinamico"].get(y)
+    if pib_dyn is not None:
+        values_plot.append(pib_dyn)  # use dynamic value
+    else:
+        values_plot.append(pib_fijo_millones[y])  # use historical
+
 
 fig_pib, ax_pib = plt.subplots(figsize=(8, 4))
 ax_pib.plot(years_plot, values_plot, marker="o", color="blue", linestyle="-", label="PIB (base 2018)")
@@ -268,6 +273,8 @@ for year in [2024, 2025]:
             zorder=5,
             label=f"PIB {year} dinámico"
         )
+ax_pib.set_xticks(years_plot)
+ax_pib.set_xticklabels(years_plot, rotation=45)
 ax_pib.set_xlabel("Año")
 ax_pib.set_ylabel("PIB (millones de pesos, base 2018)")
 ax_pib.set_title("Evolución histórica del PIB (INEGI)")
