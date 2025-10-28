@@ -1,12 +1,13 @@
 import streamlit as st
 import matplotlib.pyplot as plt
+import matplotlib.ticker as mticker
 import numpy as np
 import pandas as pd
 
 
 
 
-pib_df = pd.read_csv("pib_mexico.csv")  # or use st.file_uploader if uploading in app
+pib_df = pd.read_csv("pib_mexico.csv")  
 pib_df["TIME_PERIOD"] = pib_df["TIME_PERIOD"].astype(int)
 pib_df["OBS_VALUE"] = pib_df["OBS_VALUE"].astype(float)
 pib_fijo = dict(zip(pib_df["TIME_PERIOD"], pib_df["OBS_VALUE"]))
@@ -25,7 +26,7 @@ default_values = {
     "M_f": 1, "M_m": 0.2, "Ymex": 5
 }
 
-lista = [0, 1, 2, 3, 2, 1, 2, 4, 5, 4, 3, 2, 3, 4, 5]  # Economic cycle
+lista = [0, 1, 2, 3, 2, 1, 2, 4, 5, 4, 3, 2, 3, 4, 5]  
 years = list(range(2011, 2026))
 
 
@@ -196,10 +197,7 @@ for name, (func, p1, p2, x_vals, xlabel, ciclo_func) in funcs.items():
         current_val = independent_ranges[name][0][-1]
         val_current = func(p1, p2, current_val)
 
-        # Unique button per function
-        store_clicked_func = st.button(f"Guardar {name} Año", key=f"store_{name}")
-        if store_clicked_func:
-            st.session_state["stored_year_values"][year_selected][name] = val_current
+        
 
         # Use stored values if exist
         val_2024_plot = st.session_state["stored_year_values"][2024].get(name, full_cycle[years.index(2024)])
@@ -216,13 +214,11 @@ for name, (func, p1, p2, x_vals, xlabel, ciclo_func) in funcs.items():
         ax2.grid(True)
         st.pyplot(fig2, clear_figure=True)
 
-
-
-
-
-
-
-
+        # Unique button per function
+    with col_plot1:
+            store_clicked_func = st.button(f"Guardar {name} Año", key=f"store_{name}")
+            if store_clicked_func:
+                st.session_state["stored_year_values"][year_selected][name] = val_current
 
 
 
@@ -250,34 +246,31 @@ with col_store:
     if store_pib_clicked:
         st.session_state["pib_dinamico"][year_selected_pib] = PIB_final
 
-# PIB histórico base
-years_plot = sorted(pib_fijo_millones.keys())
-values_plot = []
-for y in years_plot:
-    pib_dyn = st.session_state["pib_dinamico"].get(y)
-    if pib_dyn is not None:
-        values_plot.append(pib_dyn)  # use dynamic value
-    else:
-        values_plot.append(pib_fijo_millones[y])  # use historical
 
+years_plot = sorted(set(list(pib_fijo_millones.keys()) + list(st.session_state["pib_dinamico"].keys())))
+values_plot = [
+    st.session_state["pib_dinamico"].get(y, pib_fijo_millones.get(y, np.nan))
+    for y in years_plot
+]
 
 fig_pib, ax_pib = plt.subplots(figsize=(8, 4))
 ax_pib.plot(years_plot, values_plot, marker="o", color="blue", linestyle="-", label="PIB (base 2018)")
+
+# Highlight dynamic years (2024–2025)
 for year in [2024, 2025]:
     if st.session_state["pib_dinamico"].get(year) is not None:
-        ax_pib.scatter(
-            year,
-            st.session_state["pib_dinamico"][year],
-            color="red",
-            s=100,
-            zorder=5,
-            label=f"PIB {year} dinámico"
-        )
+        ax_pib.scatter(year, st.session_state["pib_dinamico"][year],
+                       color="red", s=100, zorder=5)
+
+
+
+# Format axis
 ax_pib.set_xticks(years_plot)
 ax_pib.set_xticklabels(years_plot, rotation=45)
 ax_pib.set_xlabel("Año")
 ax_pib.set_ylabel("PIB (millones de pesos, base 2018)")
-ax_pib.set_title("Evolución histórica del PIB (INEGI)")
+ax_pib.set_title("Evolución del PIB de México (millones de pesos, base 2018)")
 ax_pib.grid(True)
+ax_pib.yaxis.set_major_formatter(mticker.FuncFormatter(lambda x, _: f"{x:,.0f}"))
 ax_pib.legend()
 st.pyplot(fig_pib, clear_figure=True)
